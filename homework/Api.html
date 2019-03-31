@@ -4,24 +4,45 @@
 <head>
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <title>Page Title</title>
+  <title>API Github</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <link rel="stylesheet" type="text/css" media="screen" href="Api.css">
   <link href="https://fonts.googleapis.com/css?family=Roboto+Condensed:400,400i&amp;subset=cyrillic,greek,greek-ext"
     rel="stylesheet">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta/css/bootstrap.min.css"
+    integrity="sha384-/Y6pD6FV/Vv2HJnA6t+vslU6fwYXjCFtcEpHbNJ0lyAFsXTsjBbfaDjzALeQsN6M" crossorigin="anonymous">
 
 </head>
 
 <body>
+  <div id="grad1" style="text-align:center;margin:auto;color:rgb(236, 142, 229);font-size:1px;font-weight:bold">
+
+    <h1 class="display-7" mb-4><span> &hearts; </span> API data from github</h1>
+  </div>
+
   <div id="blue-header">
     <header>
       <p>HYF repositories:
-        <select id="output" class="getText" click="getPosts()">
+        <select id="output" class="getText" click="getPosts()" onchange="getRepository(), getPostsId() ">
           <option id="getPosts" value="0">repository name</option>
         </select>
       </p>
     </header>
   </div>
+
+  <div id="main" class="container">
+    <div class="left-div whiteframe repo-properties">
+      <div><label>Repository:</label> <span id="repo-name"></span></div>
+      <div><label>Description:</label> <span id="repo-description"></span></div>
+      <div><label>Forks:</label> <span id="repo-forks"></span></div>
+      <div><label>Updated:</label> <span id="repo-updated"></span></div>
+    </div>
+    <div class="right-div whiteframe" style="visibility: hidden">
+      <p class="contributor-header">Contributors</p>
+    </div>
+  </div>
+  </div>
+
 
   <script>
     document.getElementById('getPosts').addEventListener('click', getPosts);
@@ -33,11 +54,41 @@
           let output = ` <h1>name</h1> `;
           data.forEach(function (post) {
             output += `
-            <option>${post.name}</option>`;
+            <option>${post.name}</option>
+            `;
           });
           document.getElementById('output').innerHTML = output;
+        })
+        .catch(function (err) {
+          console.log("FETCH Parsing Error", err)
         });
     }
+
+    function getPostsId() {
+      fetch('https://api.github.com/orgs/HackYourFuture/repos?per_page=100')
+        .then((res) => res.json())
+        .then((data) => {
+          let idNumber = `<h2>updated time </h2>`;
+          data.forEach(function (post) {
+            idNumber += `
+          <b>Repository :</b>  <a href="">${post.name} </a><br>
+          <b>Descripion :</b>  ${post.description} <br>
+          <b>Forks :</b>  ${post.forks} <br>
+          <b>Updated :</b>  ${new Date(post.updated_at).toLocaleString('en-US')} <br>
+                    ` ;
+          });
+          document.getElementById('repo-updated').innerHTML = idNumber;
+        }).catch(function (err) {
+          console.log("FETCH Parsing Error", err)
+        });
+    };
+
+    function getRepository() {
+      let x = document.getElementById("output").value;
+      document.getElementById("repo-name").innerHTML = " " + x;
+
+    }
+
   </script>
 </body>
 
